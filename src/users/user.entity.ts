@@ -12,6 +12,9 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column()
+  password: string;
+
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];
 }

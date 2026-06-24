@@ -11,6 +11,8 @@ import { Order } from './orders/order.entity';
 import { OrderItem } from './orders/order-item.entity';
 import { Customer } from './customers/customer.entity';
 import { CustomersModule } from './customers/customers.module';
+import { AuthModule } from './auth/auth.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { CustomersModule } from './customers/customers.module';
     ProductsModule,
     OrdersModule,
     CustomersModule,
+    AuthModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
