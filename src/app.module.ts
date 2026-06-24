@@ -9,6 +9,8 @@ import { User } from './users/user.entity';
 import { Product } from './products/product.entity';
 import { Order } from './orders/order.entity';
 import { OrderItem } from './orders/order-item.entity';
+import { Customer } from './customers/customer.entity';
+import { CustomersModule } from './customers/customers.module';
 
 @Module({
   imports: [
@@ -19,12 +21,13 @@ import { OrderItem } from './orders/order-item.entity';
       username: 'root',
       password: 'root',
       database: 'ecommerce',
-      entities: [User, Product, Order, OrderItem],
+      entities: [User, Customer, Product, Order, OrderItem],
       synchronize: true,
     }),
     UsersModule,
     ProductsModule,
     OrdersModule,
+    CustomersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
