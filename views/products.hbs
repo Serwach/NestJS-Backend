@@ -1,0 +1,28 @@
+<h1 class="page-title">Products</h1>
+
+<div class="card">
+  {{#if products.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each products}}
+      <tr>
+        <td>{{this.id}}</td>
+        <td>{{this.name}}</td>
+        <td>${{this.price}}</td>
+        <td>{{#if this.description}}{{this.description}}{{else}}—{{/if}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <div class="empty-state">No products yet.</div>
+  {{/if}}
+</div>

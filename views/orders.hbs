@@ -1,0 +1,28 @@
+<h1 class="page-title">Orders</h1>
+
+<div class="card">
+  {{#if orders.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Customer</th>
+        <th>Items</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each orders}}
+      <tr>
+        <td>{{this.id}}</td>
+        <td>{{#if this.customer}}{{this.customer.firstName}} {{this.customer.lastName}}{{else}}—{{/if}}</td>
+        <td>{{this.items.length}}</td>
+        <td>{{this.createdAt}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <div class="empty-state">No orders yet.</div>
+  {{/if}}
+</div>

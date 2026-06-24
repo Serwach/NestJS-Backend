@@ -1,0 +1,28 @@
+<h1 class="page-title">Customers</h1>
+
+<div class="card">
+  {{#if customers.length}}
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each customers}}
+      <tr>
+        <td>{{this.id}}</td>
+        <td>{{this.firstName}} {{this.lastName}}</td>
+        <td>{{this.email}}</td>
+        <td>{{#if this.phone}}{{this.phone}}{{else}}—{{/if}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{else}}
+  <div class="empty-state">No customers yet.</div>
+  {{/if}}
+</div>
