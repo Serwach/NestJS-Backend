@@ -19,4 +19,13 @@ export class CustomersService {
     const customer = this.customersRepository.create(dto);
     return this.customersRepository.save(customer);
   }
+
+  async update(id: number, dto: Partial<CreateCustomerDto>): Promise<Customer> {
+    await this.customersRepository.update(id, dto);
+    return this.customersRepository.findOneByOrFail({ id });
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.customersRepository.delete(id);
+  }
 }

@@ -1,4 +1,66 @@
-<h1 class="page-title">Customers</h1>
+<div class="page-header">
+  <h1 class="page-title">Customers</h1>
+  <button class="btn-add" onclick="openAddModal()">+ Add Customer</button>
+</div>
+
+<!-- Add modal -->
+<div id="addModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Add Customer</h2>
+      <button class="modal-close" onclick="document.getElementById('addModal').style.display='none'">&times;</button>
+    </div>
+    <form id="addForm">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" name="firstName" required placeholder="John" />
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" name="lastName" required placeholder="Doe" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="john.doe@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" name="phone" placeholder="+48123456789" />
+      </div>
+      <button type="submit" class="btn-primary" id="addBtn">Save Customer</button>
+    </form>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div id="editModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Customer</h2>
+      <button class="modal-close" onclick="document.getElementById('editModal').style.display='none'">&times;</button>
+    </div>
+    <form id="editForm">
+      <input type="hidden" name="id" />
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" name="firstName" required placeholder="John" />
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" name="lastName" required placeholder="Doe" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="john.doe@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" name="phone" placeholder="+48123456789" />
+      </div>
+      <button type="submit" class="btn-primary" id="editBtn">Save Changes</button>
+    </form>
+  </div>
+</div>
 
 <div class="card">
   {{#if customers.length}}
@@ -9,6 +71,7 @@
         <th>Name</th>
         <th>Email</th>
         <th>Phone</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -18,6 +81,10 @@
         <td>{{this.firstName}} {{this.lastName}}</td>
         <td>{{this.email}}</td>
         <td>{{#if this.phone}}{{this.phone}}{{else}}—{{/if}}</td>
+        <td class="actions">
+          <button class="btn-edit" onclick="openEditModal({{this.id}}, '{{this.firstName}}', '{{this.lastName}}', '{{this.email}}', '{{this.phone}}')">Edit</button>
+          <button class="btn-delete" onclick="deleteCustomer({{this.id}}, this)">Delete</button>
+        </td>
       </tr>
       {{/each}}
     </tbody>
@@ -26,3 +93,82 @@
   <div class="empty-state">No customers yet.</div>
   {{/if}}
 </div>
+
+<script>
+  function openAddModal() {
+    document.getElementById('addForm').reset();
+    document.getElementById('addModal').style.display = 'flex';
+  }
+
+  function openEditModal(id, firstName, lastName, email, phone) {
+    const form = document.getElementById('editForm');
+    form.elements['id'].value = id;
+    form.elements['firstName'].value = firstName;
+    form.elements['lastName'].value = lastName;
+    form.elements['email'].value = email;
+    form.elements['phone'].value = phone !== 'undefined' ? phone : '';
+    document.getElementById('editModal').style.display = 'flex';
+  }
+
+  document.getElementById('addForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    const body = { firstName: data.firstName, lastName: data.lastName, email: data.email };
+    if (data.phone) body.phone = data.phone;
+
+    const btn = document.getElementById('addBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const res = await fetch('/customers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Save Customer';
+      alert('Error saving customer. Try again.');
+    }
+  });
+
+  document.getElementById('editForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    const id = data.id;
+    const body = { firstName: data.firstName, lastName: data.lastName, email: data.email };
+    if (data.phone) body.phone = data.phone;
+
+    const btn = document.getElementById('editBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const res = await fetch('/customers/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Save Changes';
+      alert('Error updating customer. Try again.');
+    }
+  });
+
+  async function deleteCustomer(id, btn) {
+    if (!confirm('Delete this customer?')) return;
+    const row = btn.closest('tr');
+    const res = await fetch('/customers/' + id, { method: 'DELETE' });
+    if (res.ok) {
+      row.remove();
+    } else {
+      alert('Error deleting customer. Try again.');
+    }
+  }
+</script>
