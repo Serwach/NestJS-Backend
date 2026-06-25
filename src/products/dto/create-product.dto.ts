@@ -9,4 +9,7 @@ export class CreateProductDto {
 
   @ApiProperty({ example: 'High-performance laptop', required: false })
   description?: string;
+
+  @ApiProperty({ example: 'https://example.com/image.jpg', required: false })
+  imageUrl?: string;
 }
