@@ -1,15 +1,16 @@
 <div class="page-header">
   <h1 class="page-title">Products</h1>
-  <button class="btn-add" onclick="document.getElementById('productModal').style.display='flex'">+ Add Product</button>
+  <button class="btn-add" onclick="openAddModal()">+ Add Product</button>
 </div>
 
-<div id="productModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+<!-- Add modal -->
+<div id="addModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)this.style.display='none'">
   <div class="modal">
     <div class="modal-header">
       <h2 class="modal-title">Add Product</h2>
-      <button class="modal-close" onclick="document.getElementById('productModal').style.display='none'">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('addModal').style.display='none'">&times;</button>
     </div>
-    <form id="productForm">
+    <form id="addForm">
       <div class="form-group">
         <label>Name</label>
         <input type="text" name="name" required placeholder="Product name" />
@@ -26,7 +27,37 @@
         <label>Image URL</label>
         <input type="url" name="imageUrl" placeholder="https://..." />
       </div>
-      <button type="submit" class="btn-primary" id="saveBtn">Save Product</button>
+      <button type="submit" class="btn-primary" id="addBtn">Save Product</button>
+    </form>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div id="editModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Edit Product</h2>
+      <button class="modal-close" onclick="document.getElementById('editModal').style.display='none'">&times;</button>
+    </div>
+    <form id="editForm">
+      <input type="hidden" name="id" />
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" required placeholder="Product name" />
+      </div>
+      <div class="form-group">
+        <label>Price ($)</label>
+        <input type="number" name="price" step="0.01" min="0" required placeholder="0.00" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="description" placeholder="Optional description" />
+      </div>
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="url" name="imageUrl" placeholder="https://..." />
+      </div>
+      <button type="submit" class="btn-primary" id="editBtn">Save Changes</button>
     </form>
   </div>
 </div>
@@ -41,6 +72,7 @@
         <th>Name</th>
         <th>Price</th>
         <th>Description</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -51,6 +83,10 @@
         <td>{{this.name}}</td>
         <td>${{this.price}}</td>
         <td>{{#if this.description}}{{this.description}}{{else}}—{{/if}}</td>
+        <td class="actions">
+          <button class="btn-edit" onclick="openEditModal({{this.id}}, '{{this.name}}', {{this.price}}, '{{this.description}}', '{{this.imageUrl}}')">Edit</button>
+          <button class="btn-delete" onclick="deleteProduct({{this.id}}, this)">Delete</button>
+        </td>
       </tr>
       {{/each}}
     </tbody>
@@ -61,14 +97,29 @@
 </div>
 
 <script>
-  document.getElementById('productForm').addEventListener('submit', async function (e) {
+  function openAddModal() {
+    document.getElementById('addForm').reset();
+    document.getElementById('addModal').style.display = 'flex';
+  }
+
+  function openEditModal(id, name, price, description, imageUrl) {
+    const form = document.getElementById('editForm');
+    form.elements['id'].value = id;
+    form.elements['name'].value = name;
+    form.elements['price'].value = price;
+    form.elements['description'].value = description !== 'undefined' ? description : '';
+    form.elements['imageUrl'].value = imageUrl !== 'undefined' ? imageUrl : '';
+    document.getElementById('editModal').style.display = 'flex';
+  }
+
+  document.getElementById('addForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target));
     const body = { name: data.name, price: parseFloat(data.price) };
     if (data.description) body.description = data.description;
     if (data.imageUrl) body.imageUrl = data.imageUrl;
 
-    const btn = document.getElementById('saveBtn');
+    const btn = document.getElementById('addBtn');
     btn.disabled = true;
     btn.textContent = 'Saving…';
 
@@ -86,4 +137,42 @@
       alert('Error saving product. Try again.');
     }
   });
+
+  document.getElementById('editForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    const id = data.id;
+    const body = { name: data.name, price: parseFloat(data.price) };
+    if (data.description) body.description = data.description;
+    if (data.imageUrl) body.imageUrl = data.imageUrl;
+
+    const btn = document.getElementById('editBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const res = await fetch('/products/' + id, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Save Changes';
+      alert('Error updating product. Try again.');
+    }
+  });
+
+  async function deleteProduct(id, btn) {
+    if (!confirm('Delete this product?')) return;
+    const row = btn.closest('tr');
+    const res = await fetch('/products/' + id, { method: 'DELETE' });
+    if (res.ok) {
+      row.remove();
+    } else {
+      alert('Error deleting product. Try again.');
+    }
+  }
 </script>

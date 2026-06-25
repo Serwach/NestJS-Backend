@@ -19,4 +19,13 @@ export class ProductsService {
     const product = this.productsRepository.create(dto);
     return this.productsRepository.save(product);
   }
+
+  async update(id: number, dto: Partial<CreateProductDto>): Promise<Product> {
+    await this.productsRepository.update(id, dto);
+    return this.productsRepository.findOneByOrFail({ id });
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.productsRepository.delete(id);
+  }
 }

@@ -303,6 +303,37 @@ tbody tr:hover { background: #f8fafc; }
 
 .modal .btn-primary { margin-top: 8px; }
 
+/* Row action buttons */
+.actions {
+  white-space: nowrap;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-edit {
+  background: #e0f2fe;
+  color: #0369a1;
+  margin-right: 6px;
+}
+
+.btn-edit:hover { background: #bae6fd; }
+
+.btn-delete {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-delete:hover { background: #fecaca; }
+
 /* Product thumbnail */
 .product-thumb {
   width: 48px;
