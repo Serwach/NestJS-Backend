@@ -18,6 +18,9 @@ export class Customer {
   @Column({ nullable: true })
   phone: string;
 
+  @Column({ nullable: true, select: false })
+  password: string;
+
   @OneToMany(() => Order, (order) => order.customer)
   orders: Order[];
 }

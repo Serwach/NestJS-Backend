@@ -12,4 +12,15 @@ export class CreateCustomerDto {
 
   @ApiProperty({ example: '+48123456789', required: false })
   phone?: string;
+
+  @ApiProperty({ example: 'secret123', required: false })
+  password?: string;
+}
+
+export class LoginCustomerDto {
+  @ApiProperty({ example: 'john.doe@example.com' })
+  email: string;
+
+  @ApiProperty({ example: 'secret123' })
+  password: string;
 }
