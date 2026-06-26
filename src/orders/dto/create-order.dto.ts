@@ -9,8 +9,11 @@ export class CreateOrderItemDto {
 }
 
 export class CreateOrderDto {
-  @ApiProperty({ example: 1 })
-  userId: number;
+  @ApiProperty({ example: 1, required: false })
+  userId?: number;
+
+  @ApiProperty({ example: 1, required: false })
+  customerId?: number;
 
   @ApiProperty({ type: [CreateOrderItemDto] })
   items: CreateOrderItemDto[];

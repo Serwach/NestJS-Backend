@@ -21,7 +21,10 @@ export class OrdersService {
   }
 
   async create(dto: CreateOrderDto): Promise<Order> {
-    const order = this.ordersRepository.create({ user: { id: dto.userId } });
+    const order = this.ordersRepository.create({
+      ...(dto.userId ? { user: { id: dto.userId } } : {}),
+      ...(dto.customerId ? { customer: { id: dto.customerId } } : {}),
+    });
     order.items = dto.items.map((item) =>
       this.orderItemsRepository.create({
         product: { id: item.productId },
