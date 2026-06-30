@@ -18,7 +18,14 @@ async function bootstrap() {
 
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.engine('hbs', engine({ extname: '.hbs', defaultLayout: 'main', layoutsDir: join(__dirname, '..', 'views', 'layouts') }));
+  app.engine('hbs', engine({
+    extname: '.hbs',
+    defaultLayout: 'main',
+    layoutsDir: join(__dirname, '..', 'views', 'layouts'),
+    helpers: {
+      json: (context: unknown) => JSON.stringify(context),
+    },
+  }));
   app.setViewEngine('hbs');
 
   app.use(
